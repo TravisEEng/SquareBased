@@ -8,6 +8,13 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
+    background-image: url('Resources/background.png');
+    background-repeat: no-repeat;
+    background-position: center center; /* Centers the logo */
+    background-attachment: fixed; /* Keeps it fixed while scrolling */
+    background-size: cover; /* Ensures the image covers the entire background */
+    height: 100vh; /* Makes sure the background covers the entire viewport height */
+    margin: 0; /* Ensures there's no default margin around the body */
 }
 
 /* Main Card */
