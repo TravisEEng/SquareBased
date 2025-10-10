@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Square Based – Scorecard Scaffold</title>
+  <style>
+    :root{
+      --bg:#f8f9fa; --card:#ffffff; --muted:#6c757d; --ink:#212529; --accent:#007bff; --accent2:#28a745; --border:#dee2e6; --shadow:0 2px 4px rgba(0,0,0,0.1);
+    }
+    html,body{background:var(--bg); color:var(--ink); font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif; margin:0; line-height:1.5;}
+    
+    /* Mobile-first responsive design */
+    .wrap{max-width:100%; margin:0; padding:12px;}
+    .bar{display:flex; gap:12px; align-items:center; flex-wrap:wrap}
+    .card{background:var(--card); border:1px solid var(--border); border-radius:8px; padding:16px; box-shadow:var(--shadow); margin-bottom:16px}
+    .grid{display:block; gap:16px}
+    .grid-3{display:grid; grid-template-columns: 1fr; gap:12px}
+    .stack{display:flex; flex-direction:column; gap:12px}
+    .row{display:flex; gap:8px; align-items:center; justify-content:space-between; flex-wrap:wrap}
+    label{font-size:14px; color:var(--muted); font-weight:500; min-width:120px; flex-shrink:0}
+    input[type="number"]{width:100px; min-width:80px; flex:1}
+    input[type="number"], select, input[type="text"]{background:#fff; color:var(--ink); border:1px solid var(--border); padding:10px 12px; border-radius:6px; outline:none; font-size:16px; transition:border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; min-height:44px; box-sizing:border-box; -webkit-appearance:none; appearance:none}
+    input[type="number"]:focus, select:focus, input[type="text"]:focus{border-color:var(--accent); box-shadow:0 0 0 0.2rem rgba(0,123,255,0.25)}
+    input[type="checkbox"]{transform: scale(1.4); accent-color:var(--accent); min-width:20px; min-height:20px; margin-right:8px}
+    h2{margin:0 0 16px 0; font-size:20px; font-weight:600; color:var(--ink)}
+    h3{margin:16px 0 8px; font-size:16px; color:var(--muted); font-weight:600}
+    .pill{display:inline-flex; align-items:center; gap:8px; background:#f8f9fa; border:1px solid var(--border); border-radius:20px; padding:8px 12px; flex-wrap:wrap; min-width:0}
+    .mono{font-variant-numeric: tabular-nums; font-family: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
+    .title{font-weight:700; letter-spacing:.2px; font-size:18px; color:var(--ink)}
+    .subtle{color:var(--muted); font-size:13px}
+    .btn{cursor:pointer; background:var(--accent); color:#fff; border:1px solid var(--accent); padding:12px 20px; border-radius:6px; font-weight:500; font-size:16px; transition:all 0.15s ease-in-out; min-height:44px; touch-action:manipulation; -webkit-tap-highlight-color:transparent}
+    .btn:hover{background:#0056b3; border-color:#0056b3}
+    .btn:active{transform: translateY(1px)}
+    .totals{display:grid; grid-template-columns: 1fr 1fr; gap:12px}
+    .totalCard{background:#f8f9fa; border:1px solid var(--border); border-radius:8px; padding:12px; text-align:center}
+    .divider{height:1px; background:var(--border); margin:16px 0}
+    .note{font-size:13px; color:var(--muted); line-height:1.4}
+    .warn{color:#dc3545}
+    code{background:#f8f9fa; padding:2px 6px; border-radius:4px; font-size:12px; color:var(--ink)}
+    .player-summary{display:flex; flex-direction:column; gap:4px; margin-left:auto; text-align:right; font-size:12px}
+    .player-summary .value{font-weight:600; color:var(--ink)}
+    .player-summary .change{font-weight:500; transition:all 0.3s ease}
+    .player-summary .change.positive{color:#28a745}
+    .player-summary .change.negative{color:#dc3545}
+    .player-summary .change.neutral{color:var(--muted)}
+    
+    /* Prevent zoom on input focus on iOS */
+    @media screen and (-webkit-min-device-pixel-ratio:0) {
+      select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"] {
+        font-size: 16px;
+      }
+    }
+    
+    /* Tablet and up */
+    @media (min-width: 768px) {
+      .wrap{max-width:1200px; margin:32px auto; padding:20px;}
+      .card{padding:24px; margin-bottom:24px}
+      .grid{display:grid; grid-template-columns: 1fr 1fr; gap:24px}
+      .grid-3{grid-template-columns: repeat(3,1fr); gap:16px}
+      .row{gap:12px}
+      input[type="number"]{width:120px}
+      input[type="number"], select, input[type="text"]{padding:8px 12px; font-size:14px; min-height:auto}
+      h2{font-size:24px}
+      .title{font-size:20px}
+      .btn{padding:10px 20px; font-size:14px; min-height:auto}
+      .totals{display:flex; gap:16px; flex-wrap:wrap}
+      .totalCard{padding:16px}
+    }
+    
+    /* Desktop and up */
+    @media (min-width: 1024px) {
+      .wrap{padding:24px}
+      .card{padding:32px}
+      .grid{gap:32px}
+      .totals{gap:20px}
+    }
+    
+    /* Large screens */
+    @media (min-width: 1200px) {
+      .wrap{padding:32px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="bar" style="flex-direction:column; gap:16px; align-items:stretch">
+        <div class="bar" style="flex-wrap:wrap; gap:12px">
+          <div class="title">Scoring System</div>
+          <select id="scoringSystem">
+            <option value="rulebook">1 – Rulebook (Victory Points)</option>
+            <option value="mpg">2 – Matched Play Guide (Tournament Points)</option>
+            <option value="sb-standard" selected>3 – Square Based Standard</option>
+            <option value="sb-t9a">4 – Square Based T9A Style</option>
+          </select>
+          <div id="gameSizeWrap" class="pill" title="Only for systems that use size-based differentials">
+            <label for="gameSize">Game Size</label>
+            <input type="number" id="gameSize" value="2000" min="500" max="5000" step="50" style="width:100px">
+          </div>
+        </div>
+        <div class="bar" style="flex-wrap:wrap; gap:12px; justify-content:space-between">
+          <div class="pill">
+            <label for="playerAName">Player A</label>
+            <input type="text" id="playerAName" placeholder="Player A" style="width:120px">
+          </div>
+          <div class="pill">
+            <label for="playerBName">Player B</label>
+            <input type="text" id="playerBName" placeholder="Player B" style="width:120px">
+          </div>
+          <button class="btn" id="resetBtn">Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px">
+          <h2 id="playerAHeader" style="margin:0">Player A</h2>
+          <div class="player-summary" id="playerASummary">
+            <div class="value">VP: <span id="playerAVP">0</span></div>
+            <div class="value">BP: <span id="playerABP">0</span></div>
+            <div class="change neutral" id="playerAChange"></div>
+          </div>
+        </div>
+        <div class="stack" id="pA"></div>
+      </div>
+      <div class="card">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px">
+          <h2 id="playerBHeader" style="margin:0">Player B</h2>
+          <div class="player-summary" id="playerBSummary">
+            <div class="value">VP: <span id="playerBVP">0</span></div>
+            <div class="value">BP: <span id="playerBBP">0</span></div>
+            <div class="change neutral" id="playerBChange"></div>
+          </div>
+        </div>
+        <div class="stack" id="pB"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h2>Results</h2>
+      <div class="totals">
+        <div class="totalCard"><div class="subtle" id="aVPLabel">A – Total VP</div><div class="mono" id="aVP">0</div></div>
+        <div class="totalCard"><div class="subtle" id="bVPLabel">B – Total VP</div><div class="mono" id="bVP">0</div></div>
+        <div class="totalCard"><div class="subtle" id="vpDiffLabel">VP Differential (A−B)</div><div class="mono" id="vpDiff">0</div></div>
+        <div class="totalCard"><div class="subtle" id="aBPLabel">A – Battle Points</div><div class="mono" id="aBP">0</div></div>
+        <div class="totalCard"><div class="subtle" id="bBPLabel">B – Battle Points</div><div class="mono" id="bBP">0</div></div>
+      </div>
+      <div class="divider"></div>
+      <div class="note" id="notes"></div>
+    </div>
+
+    <div class="note" style="margin-top:8px">
+      Tip: This is a scaffold. Field names and constraints mirror your brief. You can embed this file in Webflow via an <code>Embed</code> component and style to taste.
+    </div>
+  </div>
+
+<script>
+// ------------------------ Config ------------------------
+const SECRET_OBJECTIVES = [
+  "Assassination","Beast Hunter","Bounty Hunter","Calming of the Winds","Captured Colours",
+  "Cut Off Their Retreat","Duel of Kings","Fire the Artillery!","Hold the Line","Magical Dominion",
+  "Overwhelming Firepower","Wizard's Bane"
+];
+
+// Square Based Standard differential tables
+const SB_STANDARD_TABLE = {
+  2000: [
+    [0,299, [10,10]],[300,549,[11,9]],[550,799,[12,8]],[800,1049,[13,7]],
+    [1050,1299,[14,6]],[1300,1549,[15,5]],[1550,1799,[16,4]],[1800,2049,[17,3]],
+    [2050,2299,[18,2]],[2300,2549,[19,1]],[2550,Infinity,[20,0]]
+  ],
+  2600: [
+    [0,399,[10,10]],[400,699,[11,9]],[700,999,[12,8]],[1000,1299,[13,7]],
+    [1300,1599,[14,6]],[1600,1899,[15,5]],[1900,2199,[16,4]],[2200,2499,[17,3]],
+    [2500,2799,[18,2]],[2800,3099,[19,1]],[3100,Infinity,[20,0]]
+  ]
+};
+
+// T9A-style differential table (+/- Secret & Secondary applied later)
+const SB_T9A_TABLE = [
+  [0,100,[10,10]],[101,200,[11,9]],[201,400,[12,8]],[401,600,[13,7]],
+  [601,800,[14,6]],[801,1000,[15,5]],[1001,Infinity,[16,4]]
+];
+
+// MPG (Matched Play Guide) – Complete Victory Points Table
+// Maps VP differential and game size to tournament points: D(3,3), MV(4,2), RV(5,1), CV(6,0)
+const MPG_TABLE = {
+  // Game size ranges: Up to 1000, 1001-1500, 1501-2000, 2001-3000, 3001+
+  ranges: [
+    { min: 0, max: 1000, name: "Up to 1,000" },
+    { min: 1001, max: 1500, name: "1,001 - 1,500" },
+    { min: 1501, max: 2000, name: "1,501 - 2,000" },
+    { min: 2001, max: 3000, name: "2,001 - 3,000" },
+    { min: 3001, max: Infinity, name: "3,001+" }
+  ],
+  // VP differential ranges and their outcomes for each game size
+  outcomes: [
+    { vpMin: 0, vpMax: 100, results: ["D", "D", "D", "D", "D"] },
+    { vpMin: 101, vpMax: 200, results: ["MV", "D", "D", "D", "D"] },
+    { vpMin: 201, vpMax: 300, results: ["MV", "MV", "D", "D", "D"] },
+    { vpMin: 301, vpMax: 450, results: ["RV", "MV", "MV", "D", "D"] },
+    { vpMin: 451, vpMax: 600, results: ["RV", "MV", "MV", "MV", "D"] },
+    { vpMin: 601, vpMax: 750, results: ["RV", "RV", "MV", "MV", "MV"] },
+    { vpMin: 751, vpMax: 950, results: ["CV", "RV", "RV", "MV", "MV"] },
+    { vpMin: 951, vpMax: 1150, results: ["CV", "RV", "RV", "RV", "MV"] },
+    { vpMin: 1151, vpMax: 1400, results: ["CV", "CV", "RV", "RV", "RV"] },
+    { vpMin: 1401, vpMax: 1700, results: ["CV", "CV", "CV", "RV", "RV"] },
+    { vpMin: 1701, vpMax: 2500, results: ["CV", "CV", "CV", "CV", "RV"] },
+    { vpMin: 2501, vpMax: Infinity, results: ["CV", "CV", "CV", "CV", "CV"] }
+  ],
+  // Tournament points mapping
+  points: { "D": [3, 3], "MV": [4, 2], "RV": [5, 1], "CV": [6, 0] }
+};
+
+// ------------------------ UI Builders ------------------------
+function el(tag, attrs={}, children=[]) {
+  const n=document.createElement(tag);
+  for(const [k,v] of Object.entries(attrs)){
+    if(k==="class") n.className=v; else if(k==="for") n.htmlFor=v; else if(k==="text") n.textContent=v; else n.setAttribute(k,v);
+  }
+  (Array.isArray(children)?children:[children]).forEach(c=>{ if(c==null) return; if(typeof c==="string") n.appendChild(document.createTextNode(c)); else n.appendChild(c); });
+  return n;
+}
+function numberInput(id, label, min=0, max=null, step=1) {
+  const input=el('input',{type:'number', id, min, step});
+  if(max!=null) {
+    input.setAttribute('max',max);
+    // Enforce maximum value on input
+    input.addEventListener('input', function(){
+      if(parseInt(this.value) > max) {
+        this.value = max;
+      }
+      recompute();
+    });
+  } else {
+    input.addEventListener('input', recompute);
+  }
+  return el('div',{class:'row'},[
+    el('label',{for:id, text:label}), input
+  ]);
+}
+function checkbox(id, label){
+  const input=el('input',{type:'checkbox', id});
+  input.addEventListener('change', recompute);
+  return el('div',{class:'row'},[
+    el('label',{for:id, text:label}), input
+  ]);
+}
+function dropdown(id, label, options){
+  const sel=el('select',{id});
+  options.forEach(opt=> sel.appendChild(el('option',{value:opt, text:opt})));
+  sel.addEventListener('change', recompute);
+  return el('div',{class:'row'},[
+    el('label',{for:id, text:label}), sel
+  ]);
+}
+
+function buildPlayerFields(containerId, playerKey){
+  const c = document.getElementById(containerId);
+  c.innerHTML = '';
+  // Common Objectives
+  c.appendChild(el('h3',{text:'Common Objectives'}));
+  c.appendChild(numberInput(`${playerKey}-pointsDestroyed`, 'Points Destroyed (raw VP)'));
+  c.appendChild(numberInput(`${playerKey}-capturedBanners`, 'Captured Banners (×50 VP)', 0, null, 1));
+  c.appendChild(checkbox(`${playerKey}-bsbSlain`, "Enemy BSB Slain (+50 VP)"));
+  c.appendChild(checkbox(`${playerKey}-generalSlain`, "The King is Dead – Enemy General Slain (+100 VP)"));
+
+  // Secondary Objectives
+  c.appendChild(el('h3',{text:'Secondary Objectives'}));
+  c.appendChild(numberInput(`${playerKey}-featuresControlled`, 'Special Features Controlled (×200 VP)', 0, null, 1));
+  c.appendChild(numberInput(`${playerKey}-baggageControlled`, 'Baggage Train Controlled (×100 VP, max 2)', 0, 2, 1));
+  c.appendChild(checkbox(`${playerKey}-baggageDestroyed`, 'Enemy Baggage Train Destroyed (+250 VP)'));
+  c.appendChild(numberInput(`${playerKey}-domContested`, 'Domination – Contested Quarters Won (×50 VP, max 4)', 0, 4, 1));
+  c.appendChild(numberInput(`${playerKey}-domUncontested`, 'Domination – Uncontested Quarters Won (×100 VP, max 4)', 0, 4, 1));
+  c.appendChild(numberInput(`${playerKey}-objectiveMarkers`, 'Objective Markers Controlled (×30 VP)', 0, null, 1));
+  c.appendChild(numberInput(`${playerKey}-bonusVP`, 'Bonus Victory Points (misc)', 0, null, 1));
+
+  // Secret Objectives
+  c.appendChild(el('h3',{text:'Secret Objectives'}));
+  c.appendChild(dropdown(`${playerKey}-secretObjective`, 'Secret Objective Used', SECRET_OBJECTIVES));
+  c.appendChild(numberInput(`${playerKey}-secretScore`, 'Secret Objective Score (adds to VP)', 0));
+
+  // T9A binary for secret + Secondary bucket scoring – shown via notes and applied in calc when system=sb-t9a
+}
+
+// ------------------------ Calculation ------------------------
+function clamp(n,min,max){ return Math.min(Math.max(n,min),max); }
+function gv(id){ const el=document.getElementById(id); if(!el) return 0; if(el.type==='checkbox') return el.checked?1:0; const v=parseFloat(el.value); return isNaN(v)?0:v; }
+
+// Track previous values for change indicators
+let previousValues = { aVP: 0, bVP: 0, aBP: 0, bBP: 0 };
+
+function showChange(elementId, currentValue, previousValue, type) {
+  const changeEl = document.getElementById(elementId);
+  const diff = currentValue - previousValue;
+  
+  if (diff === 0) {
+    changeEl.textContent = '';
+    changeEl.className = 'change neutral';
+    return;
+  }
+  
+  const sign = diff > 0 ? '+' : '';
+  changeEl.textContent = `${sign}${diff}`;
+  changeEl.className = `change ${diff > 0 ? 'positive' : 'negative'}`;
+  
+  // Clear change indicator after 3 seconds
+  setTimeout(() => {
+    changeEl.textContent = '';
+    changeEl.className = 'change neutral';
+  }, 3000);
+}
+
+function computePlayerVP(p){
+  const base = gv(`${p}-pointsDestroyed`);
+  const banners = gv(`${p}-capturedBanners`) * 50;
+  const bsb = gv(`${p}-bsbSlain`) * 50;
+  const gen = gv(`${p}-generalSlain`) * 100;
+  const feat = gv(`${p}-featuresControlled`) * 200;
+  const bagCtrl = clamp(gv(`${p}-baggageControlled`),0,2) * 100;
+  const bagDes = gv(`${p}-baggageDestroyed`) * 250;
+  const domC = clamp(gv(`${p}-domContested`),0,4) * 50;
+  const domU = clamp(gv(`${p}-domUncontested`),0,4) * 100;
+  const markers = gv(`${p}-objectiveMarkers`) * 30;
+  const bonus = gv(`${p}-bonusVP`);
+  const secretScore = gv(`${p}-secretScore`);
+  return base + banners + bsb + gen + feat + bagCtrl + bagDes + domC + domU + markers + bonus + secretScore;
+}
+
+function lookupDiffTable(diff, table){
+  for(const [lo,hi,[w,l]] of table){ if(diff>=lo && diff<=hi) return [w,l]; }
+  // If not matched, assume final band
+  const last = table[table.length-1];
+  return last[2];
+}
+
+function lookupMPGTable(vpDiff, gameSize){
+  // Find the game size range index
+  let sizeIndex = -1;
+  for(let i = 0; i < MPG_TABLE.ranges.length; i++){
+    const range = MPG_TABLE.ranges[i];
+    if(gameSize >= range.min && gameSize <= range.max){
+      sizeIndex = i;
+      break;
+    }
+  }
+  
+  // Default to largest size if not found
+  if(sizeIndex === -1) sizeIndex = MPG_TABLE.ranges.length - 1;
+  
+  // Find the VP differential range
+  for(const outcome of MPG_TABLE.outcomes){
+    if(vpDiff >= outcome.vpMin && vpDiff <= outcome.vpMax){
+      const result = outcome.results[sizeIndex];
+      return MPG_TABLE.points[result];
+    }
+  }
+  
+  // Default to crushing victory if not found
+  return MPG_TABLE.points["CV"];
+}
+
+function recompute(){
+  const system = document.getElementById('scoringSystem').value;
+  const size = document.getElementById('gameSize').value;
+  const notes = document.getElementById('notes');
+
+  const aVP = computePlayerVP('A');
+  const bVP = computePlayerVP('B');
+  const diff = Math.abs(aVP - bVP);
+  const aAhead = aVP >= bVP;
+
+  let aBP=0, bBP=0, info=[];
+
+  if(system==='rulebook'){
+    // Pure VP totals, no BP table
+    aBP = aVP; bBP = bVP;
+    info.push('Rulebook: Battle Points equal total Victory Points.');
+    document.getElementById('gameSizeWrap').style.display='none';
+  }
+  else if(system==='mpg'){
+    // Complete Victory Points Table System: D(3,3), MV(4,2), RV(5,1), CV(6,0)
+    const [w,l] = lookupMPGTable(diff, parseInt(size));
+    aBP = aAhead ? w : l; 
+    bBP = aAhead ? l : w;
+    
+    // Find the result type for display
+    let resultType = "D";
+    for(const [type, points] of Object.entries(MPG_TABLE.points)){
+      if(points[0] === w && points[1] === l){
+        resultType = type;
+        break;
+      }
+    }
+    
+    // Find game size range name
+    let sizeRange = "Unknown";
+    for(const range of MPG_TABLE.ranges){
+      if(parseInt(size) >= range.min && parseInt(size) <= range.max){
+        sizeRange = range.name;
+        break;
+      }
+    }
+    
+    info.push(`Matched Play Guide: ${resultType} (${sizeRange})`);
+    document.getElementById('gameSizeWrap').style.display='inline-flex';
+  }
+  else if(system==='sb-standard'){
+    const table = SB_STANDARD_TABLE[size] || SB_STANDARD_TABLE[2000];
+    const [w,l] = lookupDiffTable(diff, table);
+    aBP = aAhead ? w : l; bBP = aAhead ? l : w;
+    info.push(`Square Based Standard: ${size}pt band applied.`);
+    document.getElementById('gameSizeWrap').style.display='inline-flex';
+  }
+  else if(system==='sb-t9a'){
+    const [w,l] = lookupDiffTable(diff, SB_T9A_TABLE);
+    aBP = aAhead ? w : l; bBP = aAhead ? l : w;
+    // Secondary Mission swing: compare secondary VP components only
+    const aSec = (gv('A-featuresControlled')*200) + (clamp(gv('A-baggageControlled'),0,2)*100) + (gv('A-baggageDestroyed')*250) + (clamp(gv('A-domContested'),0,4)*50) + (clamp(gv('A-domUncontested'),0,4)*100) + (gv('A-objectiveMarkers')*30) + gv('A-bonusVP');
+    const bSec = (gv('B-featuresControlled')*200) + (clamp(gv('B-baggageControlled'),0,2)*100) + (gv('B-baggageDestroyed')*250) + (clamp(gv('B-domContested'),0,4)*50) + (clamp(gv('B-domUncontested'),0,4)*100) + (gv('B-objectiveMarkers')*30) + gv('B-bonusVP');
+    if(aSec>bSec){ aBP+=3; bBP-=3; info.push('Secondary: A +3 / B -3'); }
+    else if(bSec>aSec){ bBP+=3; aBP-=3; info.push('Secondary: B +3 / A -3'); }
+    else { info.push('Secondary: tie (±0)'); }
+
+    // Secret objectives are binary (+1/-1) in T9A style
+    const aSecretAchieved = gv('A-secretAchieved');
+    const bSecretAchieved = gv('B-secretAchieved');
+    if(aSecretAchieved){ aBP+=1; bBP-=1; info.push('Secret: A +1 / B -1'); }
+    if(bSecretAchieved){ bBP+=1; aBP-=1; info.push('Secret: B +1 / A -1'); }
+    document.getElementById('gameSizeWrap').style.display='none';
+  }
+
+  // Update UI
+  document.getElementById('aVP').textContent = Math.round(aVP);
+  document.getElementById('bVP').textContent = Math.round(bVP);
+  document.getElementById('vpDiff').textContent = (aAhead?'+':'-') + Math.round(diff);
+  document.getElementById('aBP').textContent = aBP;
+  document.getElementById('bBP').textContent = bBP;
+  notes.innerHTML = info.join(' · ');
+  
+  // Update compact displays
+  document.getElementById('playerAVP').textContent = Math.round(aVP);
+  document.getElementById('playerBVP').textContent = Math.round(bVP);
+  document.getElementById('playerABP').textContent = aBP;
+  document.getElementById('playerBBP').textContent = bBP;
+  
+  // Show change indicators
+  showChange('playerAChange', aVP, previousValues.aVP, 'VP');
+  showChange('playerBChange', bVP, previousValues.bVP, 'VP');
+  
+  // Update previous values for next comparison
+  previousValues.aVP = aVP;
+  previousValues.bVP = bVP;
+  previousValues.aBP = aBP;
+  previousValues.bBP = bBP;
+}
+
+function updateSecretObjectives(){
+  const system = document.getElementById('scoringSystem').value;
+  const isT9A = system === 'sb-t9a';
+  
+  // Update Player A secret objectives
+  const aSecretSection = document.querySelector('#pA h3:last-of-type').nextElementSibling;
+  const aSecretDropdown = document.getElementById('A-secretObjective');
+  const aSecretScore = document.getElementById('A-secretScore');
+  const aSecretCheckbox = document.getElementById('A-secretAchieved');
+  
+  if(isT9A){
+    // Replace dropdown and score with checkbox
+    if(aSecretDropdown && aSecretScore){
+      const checkbox = el('input', {type: 'checkbox', id: 'A-secretAchieved'});
+      checkbox.addEventListener('change', recompute);
+      aSecretSection.innerHTML = '';
+      aSecretSection.appendChild(el('div', {class: 'row'}, [
+        el('label', {for: 'A-secretAchieved', text: 'Secret Objective Achieved'}), checkbox
+      ]));
+    }
+  } else {
+    // Only restore if we currently have checkbox (coming from T9A)
+    if(aSecretCheckbox){
+      aSecretSection.innerHTML = '';
+      aSecretSection.appendChild(dropdown('A-secretObjective', 'Secret Objective Used', SECRET_OBJECTIVES));
+      aSecretSection.appendChild(numberInput('A-secretScore', 'Secret Objective Score (adds to VP)', 0));
+    }
+  }
+  
+  // Update Player B secret objectives
+  const bSecretSection = document.querySelector('#pB h3:last-of-type').nextElementSibling;
+  const bSecretDropdown = document.getElementById('B-secretObjective');
+  const bSecretScore = document.getElementById('B-secretScore');
+  const bSecretCheckbox = document.getElementById('B-secretAchieved');
+  
+  if(isT9A){
+    // Replace dropdown and score with checkbox
+    if(bSecretDropdown && bSecretScore){
+      const checkbox = el('input', {type: 'checkbox', id: 'B-secretAchieved'});
+      checkbox.addEventListener('change', recompute);
+      bSecretSection.innerHTML = '';
+      bSecretSection.appendChild(el('div', {class: 'row'}, [
+        el('label', {for: 'B-secretAchieved', text: 'Secret Objective Achieved'}), checkbox
+      ]));
+    }
+  } else {
+    // Only restore if we currently have checkbox (coming from T9A)
+    if(bSecretCheckbox){
+      bSecretSection.innerHTML = '';
+      bSecretSection.appendChild(dropdown('B-secretObjective', 'Secret Objective Used', SECRET_OBJECTIVES));
+      bSecretSection.appendChild(numberInput('B-secretScore', 'Secret Objective Score (adds to VP)', 0));
+    }
+  }
+}
+
+function updatePlayerNames(){
+  const playerAName = document.getElementById('playerAName').value || 'Player A';
+  const playerBName = document.getElementById('playerBName').value || 'Player B';
+  document.getElementById('playerAHeader').textContent = playerAName;
+  document.getElementById('playerBHeader').textContent = playerBName;
+  document.getElementById('aVPLabel').textContent = `${playerAName} – Total VP`;
+  document.getElementById('bVPLabel').textContent = `${playerBName} – Total VP`;
+  document.getElementById('vpDiffLabel').textContent = `VP Differential (${playerAName}−${playerBName})`;
+  document.getElementById('aBPLabel').textContent = `${playerAName} – Battle Points`;
+  document.getElementById('bBPLabel').textContent = `${playerBName} – Battle Points`;
+}
+
+function resetAll(){
+  document.querySelectorAll('input[type="number"]').forEach(i=> i.value='');
+  document.querySelectorAll('input[type="checkbox"]').forEach(i=> i.checked=false);
+  document.querySelectorAll('input[type="text"]').forEach(i=> i.value='');
+  document.querySelectorAll('select').forEach(s=> {
+    if(s.id==='scoringSystem') s.value='sb-standard';
+  });
+  document.getElementById('gameSize').value='2000';
+  
+  // Reset previous values
+  previousValues = { aVP: 0, bVP: 0, aBP: 0, bBP: 0 };
+  
+  updatePlayerNames();
+  recompute();
+}
+
+// Init
+buildPlayerFields('pA','A');
+buildPlayerFields('pB','B');
+document.getElementById('scoringSystem').addEventListener('change', function(){
+  updateSecretObjectives();
+  recompute();
+});
+document.getElementById('gameSize').addEventListener('input', recompute);
+document.getElementById('playerAName').addEventListener('input', updatePlayerNames);
+document.getElementById('playerBName').addEventListener('input', updatePlayerNames);
+document.getElementById('resetBtn').addEventListener('click', resetAll);
+updatePlayerNames();
+updateSecretObjectives();
+recompute();
+</script>
+</body>
+</html>
